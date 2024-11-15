@@ -19,6 +19,7 @@ package org.glassfish.jersey.test.artifacts;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class MoxyAsmTest {
@@ -31,21 +32,11 @@ public class MoxyAsmTest {
                 .findFirst().get();
         Model projectPom = MavenUtil.getModelFromFile("../../pom.xml");
         final String asmVersion = projectPom.getProperties().getProperty("asm.version");
-        final String moxyAsmVersion = findVersionInModel(moxyAsmDependency.getVersion(), projectPom);
+        final String moxyAsmVersion = projectPom.getProperties().getProperty("moxy.asm.version");
 
-        final String lastTwo = moxyAsmVersion.substring(moxyAsmVersion.length() - 2);
-        final String msg = "org.eclipse.persistence.asm version " + moxyAsmVersion
-                + " differs from asm version " + asmVersion + " in /media/moxy/pom.xml";
-        Assert.assertEquals(msg, asmVersion + lastTwo, moxyAsmVersion);
+        final String msg = "org.eclipse.persistence.asm (moxy.asm.version) version " + moxyAsmVersion
+                + " differs from asm version (asm.version) " + asmVersion + " in /media/moxy/pom.xml";
+        Assert.assertEquals(msg, asmVersion, moxyAsmVersion);
         System.out.println("Found expected Moxy ASM version " + moxyAsmVersion);
-    }
-
-    private static String findVersionInModel(String version, Model model) {
-        if (version.startsWith("${")) {
-            String _version = version.substring(2, version.length() - 1);
-            return model.getProperties().getProperty(_version);
-        } else {
-            return version;
-        }
     }
 }
