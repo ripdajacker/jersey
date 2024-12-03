@@ -298,7 +298,7 @@ public class HttpUrlConnectorProvider implements ConnectorProvider {
 
     private static class DefaultConnectionFactory implements ConnectionFactory {
 
-        private final ConcurrentHashMap<URL, Lock> locks = new ConcurrentHashMap<>();
+        private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
 
         @Override
         public HttpURLConnection getConnection(final URL url) throws IOException {
@@ -311,7 +311,7 @@ public class HttpUrlConnectorProvider implements ConnectorProvider {
         }
 
         private HttpURLConnection connect(URL url, Proxy proxy) throws IOException {
-            Lock lock = locks.computeIfAbsent(url, u -> new ReentrantLock());
+            Lock lock = locks.computeIfAbsent(url.toString(), u -> new ReentrantLock());
             lock.lock();
             try {
                 return (proxy == null) ? (HttpURLConnection) url.openConnection() : (HttpURLConnection) url.openConnection(proxy);
